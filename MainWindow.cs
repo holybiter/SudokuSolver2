@@ -131,8 +131,7 @@ namespace SudokuSolver2
             }
             else
             {
-                var finishSetupButton = this.Controls.Find("FinishSetupBotton", false).First();
-                finishSetupButton.Focus();
+                FinishSetupButton.Focus();
             }
         }
 
