@@ -14,6 +14,7 @@ namespace SudokuSolver2
         private TextBox textBox;
         public int Value { get; set; }
         public bool HasValue { get; set; }
+        private bool isDefinedfromStart;
         private List<int> possibleValues;
 
         private Cluster corresponedLine;
@@ -23,7 +24,7 @@ namespace SudokuSolver2
         public Cell (TextBox textBox)
         {
             this.textBox = textBox;
-            UpdateValue();
+            UpdateValueAfterStart();
             possibleValues = new List<int>();
             for (int i = 0; i < 9; i++)
             {
@@ -33,21 +34,48 @@ namespace SudokuSolver2
 
         public void MakeNoneInteractable()
         {
-            UpdateValue();
+            UpdateValueAfterStart();
             textBox.Enabled = false;
             textBox.BackColor = Color.White;
         }
 
-        private void UpdateValue()
+        public void MakeInteractable()
         {
-            if (textBox.Text == "")
+            textBox.Enabled = true;
+        }
+
+        public void ClearValue()
+        {
+            HasValue = false;
+            Value = 0;
+            textBox.Text = String.Empty;
+            possibleValues = new List<int>();
+            for (int i = 0; i < 9; i++)
+            {
+                possibleValues.Add(i + 1);
+            }
+        }
+
+        public void ResetToInitialValue()
+        {
+            if (!isDefinedfromStart)
+            {
+                ClearValue();
+            }
+        }
+
+        private void UpdateValueAfterStart()
+        {
+            if (textBox.Text == String.Empty)
             {
                 HasValue = false;
+                isDefinedfromStart = false;
             }
             else
             {
                 Value = Convert.ToInt32(textBox.Text);
                 HasValue = true;
+                isDefinedfromStart = true;
             }
         }
 
@@ -88,7 +116,7 @@ namespace SudokuSolver2
         }
 
         /// <summary>
-        /// Fills the only possible number for row/column/area if possible
+        /// Fills the only possible number for cluster if possible
         /// </summary>
         public void TryFill()
         {

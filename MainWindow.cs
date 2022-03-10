@@ -157,5 +157,33 @@ namespace SudokuSolver2
                 cells[i].TryFill();
             }
         }
+
+        private void RestartButton_Click(object sender, EventArgs e)
+        {
+            FillButton.Enabled = false;
+            FillButton.Visible = false;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].MakeInteractable();
+                cells[i].ResetToInitialValue();
+            }
+
+            FinishSetupButton.Visible = true;
+            FinishSetupButton.Enabled = true;
+        }
+
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            FillButton.Enabled = false;
+            FillButton.Visible = false;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].MakeInteractable();
+                cells[i].ClearValue();
+            }
+
+            FinishSetupButton.Visible = true;
+            FinishSetupButton.Enabled = true;
+        }
     }
 }

@@ -32,6 +32,8 @@
             this.textBox00 = new System.Windows.Forms.TextBox();
             this.FinishSetupButton = new System.Windows.Forms.Button();
             this.FillButton = new System.Windows.Forms.Button();
+            this.RestartButton = new System.Windows.Forms.Button();
+            this.ResetButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox00
@@ -70,6 +72,28 @@
             this.FillButton.Visible = false;
             this.FillButton.Click += new System.EventHandler(this.FillCell);
             // 
+            // RestartButton
+            // 
+            this.RestartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold);
+            this.RestartButton.Location = new System.Drawing.Point(662, 553);
+            this.RestartButton.Name = "RestartButton";
+            this.RestartButton.Size = new System.Drawing.Size(68, 38);
+            this.RestartButton.TabIndex = 2;
+            this.RestartButton.Text = "Restart";
+            this.RestartButton.UseVisualStyleBackColor = true;
+            this.RestartButton.Click += new System.EventHandler(this.RestartButton_Click);
+            // 
+            // ResetButton
+            // 
+            this.ResetButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold);
+            this.ResetButton.Location = new System.Drawing.Point(737, 553);
+            this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Size = new System.Drawing.Size(68, 38);
+            this.ResetButton.TabIndex = 2;
+            this.ResetButton.Text = "Reset";
+            this.ResetButton.UseVisualStyleBackColor = true;
+            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -77,6 +101,8 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(866, 621);
+            this.Controls.Add(this.ResetButton);
+            this.Controls.Add(this.RestartButton);
             this.Controls.Add(this.FillButton);
             this.Controls.Add(this.FinishSetupButton);
             this.Controls.Add(this.textBox00);
@@ -94,6 +120,8 @@
         private System.Windows.Forms.TextBox textBox00;
         private System.Windows.Forms.Button FinishSetupButton;
         private System.Windows.Forms.Button FillButton;
+        private System.Windows.Forms.Button RestartButton;
+        private System.Windows.Forms.Button ResetButton;
     }
 }
 
