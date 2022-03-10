@@ -121,6 +121,7 @@
             this.ShowPossibleValuesCheckBox.TabIndex = 4;
             this.ShowPossibleValuesCheckBox.Text = "Show possible values";
             this.ShowPossibleValuesCheckBox.UseVisualStyleBackColor = true;
+            this.ShowPossibleValuesCheckBox.Visible = false;
             this.ShowPossibleValuesCheckBox.CheckedChanged += new System.EventHandler(this.ShowPossibleValuesCheckBox_CheckedChanged);
             // 
             // MainWindow

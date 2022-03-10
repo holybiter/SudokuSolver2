@@ -159,6 +159,7 @@ namespace SudokuSolver2
 
         private void FinishSetupButton_Click(object sender, EventArgs e)
         {
+            ShowPossibleValuesCheckBox.Visible = true;
             FillButton.Enabled = true;
             FillButton.Visible = true;
             for (int i = 0; i < cells.Count; i++)
@@ -169,6 +170,10 @@ namespace SudokuSolver2
             Button button = ((Button)sender);
             button.Visible = false;
             button.Enabled = false;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].UpdatePossibleValues();
+            }
         }
 
         private void FillCell(object sender, EventArgs e)
@@ -182,6 +187,8 @@ namespace SudokuSolver2
 
         private void RestartButton_Click(object sender, EventArgs e)
         {
+            ShowPossibleValuesCheckBox.Checked = false;
+            ShowPossibleValuesCheckBox.Visible = false;
             FillButton.Enabled = false;
             FillButton.Visible = false;
             for (int i = 0; i < cells.Count; i++)
@@ -196,6 +203,8 @@ namespace SudokuSolver2
 
         private void ResetButton_Click(object sender, EventArgs e)
         {
+            ShowPossibleValuesCheckBox.Checked = false;
+            ShowPossibleValuesCheckBox.Visible = false;
             FillButton.Enabled = false;
             FillButton.Visible = false;
             for (int i = 0; i < cells.Count; i++)
