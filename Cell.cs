@@ -12,6 +12,7 @@ namespace SudokuSolver2
     internal class Cell
     {
         private TextBox textBox;
+        private Label possibleValuesLabel;
         public int Value { get; set; }
         public bool HasValue { get; set; }
         private bool isDefinedfromStart;
@@ -21,15 +22,17 @@ namespace SudokuSolver2
         private Cluster corresponedColumn;
         private Cluster corresponedArea;
 
-        public Cell (TextBox textBox)
+        public Cell (TextBox textBox, Label possibleValuesLabel)
         {
             this.textBox = textBox;
-            UpdateValueAfterStart();
+            this.possibleValuesLabel = possibleValuesLabel;
             possibleValues = new List<int>();
             for (int i = 0; i < 9; i++)
             {
                 possibleValues.Add(i + 1);
             }
+            UpdateValueAfterStart();
+            UpdatePossibleValuesLabel();
         }
 
         public void MakeNoneInteractable()
@@ -54,6 +57,7 @@ namespace SudokuSolver2
             {
                 possibleValues.Add(i + 1);
             }
+            UpdatePossibleValuesLabel();
         }
 
         public void ResetToInitialValue()
@@ -77,6 +81,7 @@ namespace SudokuSolver2
                 HasValue = true;
                 isDefinedfromStart = true;
             }
+            UpdatePossibleValuesLabel();
         }
 
         public void BindLine(Cluster line)
@@ -113,6 +118,19 @@ namespace SudokuSolver2
                     }
                 }
             }
+            UpdatePossibleValuesLabel();
+        }
+
+        private void UpdatePossibleValuesLabel()
+        {
+            if (HasValue)
+            {
+                possibleValuesLabel.Text = String.Empty;
+            }
+            else
+            {
+                possibleValuesLabel.Text = string.Join("", possibleValues.ToArray());
+            }
         }
 
         /// <summary>
@@ -127,8 +145,14 @@ namespace SudokuSolver2
                     Value = possibleValues[0];
                     HasValue = true;
                     textBox.Text = Value.ToString();
+                    UpdatePossibleValuesLabel();
                 }
             }
+        }
+
+        public void TogglePossibleValuesLabelVisibility(bool show)
+        {
+            possibleValuesLabel.Visible = show;
         }
     }
 }

@@ -29,24 +29,28 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.textBox00 = new System.Windows.Forms.TextBox();
+            this.ExampleCellTextBox = new System.Windows.Forms.TextBox();
             this.FinishSetupButton = new System.Windows.Forms.Button();
             this.FillButton = new System.Windows.Forms.Button();
             this.RestartButton = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
+            this.ExamplePossibleValuesLabel = new System.Windows.Forms.Label();
+            this.ShowPossibleValuesCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
-            // textBox00
+            // ExampleCellTextBox
             // 
-            this.textBox00.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox00.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold);
-            this.textBox00.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox00.Location = new System.Drawing.Point(17, 12);
-            this.textBox00.Name = "textBox00";
-            this.textBox00.Size = new System.Drawing.Size(33, 46);
-            this.textBox00.TabIndex = 0;
-            this.textBox00.Visible = false;
-            this.textBox00.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ControlAllowedCharactersInCell);
+            this.ExampleCellTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ExampleCellTextBox.Enabled = false;
+            this.ExampleCellTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold);
+            this.ExampleCellTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.ExampleCellTextBox.Location = new System.Drawing.Point(17, 12);
+            this.ExampleCellTextBox.Name = "ExampleCellTextBox";
+            this.ExampleCellTextBox.Size = new System.Drawing.Size(33, 46);
+            this.ExampleCellTextBox.TabIndex = 0;
+            this.ExampleCellTextBox.Text = "5";
+            this.ExampleCellTextBox.Visible = false;
+            this.ExampleCellTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ControlAllowedCharactersInCell);
             // 
             // FinishSetupButton
             // 
@@ -94,6 +98,31 @@
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
+            // ExamplePossibleValuesLabel
+            // 
+            this.ExamplePossibleValuesLabel.AutoSize = true;
+            this.ExamplePossibleValuesLabel.BackColor = System.Drawing.Color.Transparent;
+            this.ExamplePossibleValuesLabel.Enabled = false;
+            this.ExamplePossibleValuesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold);
+            this.ExamplePossibleValuesLabel.Location = new System.Drawing.Point(12, 59);
+            this.ExamplePossibleValuesLabel.Name = "ExamplePossibleValuesLabel";
+            this.ExamplePossibleValuesLabel.Size = new System.Drawing.Size(50, 9);
+            this.ExamplePossibleValuesLabel.TabIndex = 3;
+            this.ExamplePossibleValuesLabel.Text = "123456789";
+            this.ExamplePossibleValuesLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.ExamplePossibleValuesLabel.Visible = false;
+            // 
+            // ShowPossibleValuesCheckBox
+            // 
+            this.ShowPossibleValuesCheckBox.AutoSize = true;
+            this.ShowPossibleValuesCheckBox.Location = new System.Drawing.Point(662, 125);
+            this.ShowPossibleValuesCheckBox.Name = "ShowPossibleValuesCheckBox";
+            this.ShowPossibleValuesCheckBox.Size = new System.Drawing.Size(128, 17);
+            this.ShowPossibleValuesCheckBox.TabIndex = 4;
+            this.ShowPossibleValuesCheckBox.Text = "Show possible values";
+            this.ShowPossibleValuesCheckBox.UseVisualStyleBackColor = true;
+            this.ShowPossibleValuesCheckBox.CheckedChanged += new System.EventHandler(this.ShowPossibleValuesCheckBox_CheckedChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -101,11 +130,13 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(866, 621);
+            this.Controls.Add(this.ShowPossibleValuesCheckBox);
+            this.Controls.Add(this.ExamplePossibleValuesLabel);
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.RestartButton);
             this.Controls.Add(this.FillButton);
             this.Controls.Add(this.FinishSetupButton);
-            this.Controls.Add(this.textBox00);
+            this.Controls.Add(this.ExampleCellTextBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainWindow";
             this.RightToLeftLayout = true;
@@ -117,11 +148,13 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox00;
+        private System.Windows.Forms.TextBox ExampleCellTextBox;
         private System.Windows.Forms.Button FinishSetupButton;
         private System.Windows.Forms.Button FillButton;
         private System.Windows.Forms.Button RestartButton;
         private System.Windows.Forms.Button ResetButton;
+        private System.Windows.Forms.Label ExamplePossibleValuesLabel;
+        private System.Windows.Forms.CheckBox ShowPossibleValuesCheckBox;
     }
 }
 

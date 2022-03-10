@@ -19,30 +19,14 @@ namespace SudokuSolver2
             InitializeComponent();
             cells = new List<Cell>();
 
-            // create all cells
-            const int initialX = 17, initialY = 12, intervalX = 67, intervalY = 67;
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    var location = new System.Drawing.Point(j * intervalX + initialX, i * intervalY + initialY);
-                    TextBox newCell = new TextBox();
-                    newCell.Location = location;
-                    newCell.Text = String.Empty;
-                    //newCell.Text = "5";
-                    //newCell.Enabled = false;
-                    //newCell.BackColor = Color.White;
-                    newCell.BorderStyle = System.Windows.Forms.BorderStyle.None;
-                    newCell.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold);
-                    newCell.Size = new System.Drawing.Size(33, 46);
-                    newCell.Name = "TextBox" + i.ToString() + j.ToString();
-                    newCell.KeyPress += new KeyPressEventHandler(ControlAllowedCharactersInCell);
-                    this.Controls.Add(newCell);
-
-                    var addedCell = new Cell(newCell);
+                    var cellTextBox = CreateTextBoxForCell(i, j);
+                    var possibleValuesLabel = CreateLabelForCell(i, j);
+                    var addedCell = new Cell(cellTextBox, possibleValuesLabel);
                     cells.Add(addedCell);
-
-
                 }
             }
 
@@ -77,10 +61,48 @@ namespace SudokuSolver2
                     cells[9 * i + j].BindArea(area);
                 }
             }
+        }
 
-            //var line = new Cluster();
-            //addedCell.BindLine(line);
-            //line.AddCell(addedCell);
+        private TextBox CreateTextBoxForCell(int i, int j)
+        {
+            TextBox newCell = new TextBox();
+            int initialX = 17, initialY = i == 8 ? 10 : 12;
+            double intervalX = 66.6666, intervalY = 66.6666;
+            var location = new Point((int)Math.Round(j * intervalX + initialX), (int)Math.Round(i * intervalY + initialY));
+
+            newCell.Location = location;
+            newCell.Text = String.Empty;
+            newCell.BorderStyle = BorderStyle.None;
+            newCell.TextAlign = HorizontalAlignment.Center;
+            newCell.Font = new Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold);
+            newCell.Size = new Size(33, 46);
+            newCell.Name = "TextBox" + i.ToString() + j.ToString();
+            newCell.KeyPress += new KeyPressEventHandler(ControlAllowedCharactersInCell);
+            this.Controls.Add(newCell);
+
+            return newCell;
+        }
+
+        private Label CreateLabelForCell(int i, int j)
+        {
+            Label newLabel = new Label();
+            int initialX = 12, initialY = i == 8 ? 55 : 57;
+            double intervalX = 66.6666, intervalY = 66.6666;
+            var location = new Point((int)Math.Round(j * intervalX + initialX), (int)Math.Round(i * intervalY + initialY));
+
+            newLabel.AutoSize = true;
+            newLabel.BackColor = Color.Transparent;
+            newLabel.TextAlign = ContentAlignment.TopCenter;
+            newLabel.Visible = ShowPossibleValuesCheckBox.Checked;
+            newLabel.Font = new Font("Microsoft Sans Serif", 6F, FontStyle.Bold);
+            newLabel.Location = location;
+            newLabel.Name = "PossibleValuesLabel" + i.ToString() + j.ToString();
+            newLabel.Size = new Size(50, 9);
+            newLabel.TabIndex = 3;
+            newLabel.Text = String.Empty;
+            this.Controls.Add(newLabel);
+
+            return newLabel;
         }
 
         private void ControlAllowedCharactersInCell(object sender, KeyPressEventArgs e)
@@ -184,6 +206,14 @@ namespace SudokuSolver2
 
             FinishSetupButton.Visible = true;
             FinishSetupButton.Enabled = true;
+        }
+
+        private void ShowPossibleValuesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].TogglePossibleValuesLabelVisibility(((CheckBox)sender).Checked);
+            }
         }
     }
 }
