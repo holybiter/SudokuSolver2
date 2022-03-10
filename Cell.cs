@@ -18,6 +18,10 @@ namespace SudokuSolver2
         private bool isDefinedfromStart;
         private List<int> possibleValues;
 
+        private int positionInLine;
+        private int positionInColumn;
+        private int positionInArea;
+
         private Cluster corresponedLine;
         private Cluster corresponedColumn;
         private Cluster corresponedArea;
@@ -26,6 +30,11 @@ namespace SudokuSolver2
         {
             this.textBox = textBox;
             this.possibleValuesLabel = possibleValuesLabel;
+
+            positionInLine = Convert.ToInt32(textBox.Name.Substring(7, 1));
+            positionInColumn = Convert.ToInt32(textBox.Name.Substring(8, 1));
+            positionInArea = 3 * (positionInLine % 3) + (positionInColumn % 3);
+
             possibleValues = new List<int>();
             for (int i = 0; i < 9; i++)
             {
@@ -118,6 +127,10 @@ namespace SudokuSolver2
                     }
                 }
             }
+            else
+            {
+                possibleValues.Clear();
+            }
             UpdatePossibleValuesLabel();
         }
 
@@ -138,16 +151,47 @@ namespace SudokuSolver2
         /// </summary>
         public void TryFill()
         {
+            // Fill the only possioble number for CELL
             if (!HasValue)
             {
                 if (possibleValues.Count == 1)
                 {
-                    Value = possibleValues[0];
-                    HasValue = true;
-                    textBox.Text = Value.ToString();
-                    UpdatePossibleValuesLabel();
+                    SetValue(possibleValues[0]);
                 }
             }
+            // Fill the only posiiblew number for line/column/area
+            if (!HasValue)
+            {
+                for (int j = 0; j < possibleValues.Count; j++)
+                {
+                    if (corresponedLine.PossibleValueCount(possibleValues[j], positionInLine) == 0 ||
+                        corresponedColumn.PossibleValueCount(possibleValues[j], positionInColumn) == 0 ||
+                        corresponedArea.PossibleValueCount(possibleValues[j], positionInArea) == 0)
+                    {
+                        SetValue(possibleValues[j]);
+                    }
+                }
+            }
+        }
+
+        private void SetValue(int value)
+        {
+            Value = value;
+            HasValue = true;
+            textBox.Text = Value.ToString();
+            UpdatePossibleValues();
+        }
+
+        public bool IfPossibleValue(int value)
+        {
+            for( int i = 0; i < possibleValues.Count; i++)
+            {
+                if (possibleValues[i] == value)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void TogglePossibleValuesLabelVisibility(bool show)

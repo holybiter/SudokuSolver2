@@ -31,5 +31,21 @@ namespace SudokuSolver2
             }
             return false;
         }
+
+        public int PossibleValueCount(int value, int x)
+        {
+            int count = 0;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                if (cells[i].HasValue == false && i != x)
+                {
+                    if (cells[i].IfPossibleValue(value))
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
     }
 }
