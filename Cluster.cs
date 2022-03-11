@@ -39,7 +39,7 @@ namespace SudokuSolver2
             {
                 if (cells[i].HasValue == false && i != x)
                 {
-                    if (cells[i].IfPossibleValue(value))
+                    if (cells[i].ContainsPossibleValue(value))
                     {
                         count++;
                     }

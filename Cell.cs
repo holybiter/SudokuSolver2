@@ -9,12 +9,13 @@ using System.Windows.Forms;
 namespace SudokuSolver2
 {
 
-    internal class Cell
+    internal class Cell : ICell
     {
+        public int Value { get; private set; }
+        public bool HasValue { get; private set; }
+
         private TextBox textBox;
         private Label possibleValuesLabel;
-        public int Value { get; set; }
-        public bool HasValue { get; set; }
         private bool isDefinedfromStart;
         private List<int> possibleValues;
 
@@ -25,6 +26,14 @@ namespace SudokuSolver2
         private Cluster corresponedLine;
         private Cluster corresponedColumn;
         private Cluster corresponedArea;
+
+        private void SetValue(int value)
+        {
+            Value = value;
+            HasValue = true;
+            textBox.Text = Value.ToString();
+            UpdatePossibleValues();
+        }
 
         public Cell (TextBox textBox, Label possibleValuesLabel)
         {
@@ -40,8 +49,6 @@ namespace SudokuSolver2
             {
                 possibleValues.Add(i + 1);
             }
-            UpdateValueAfterStart();
-            UpdatePossibleValuesLabel();
         }
 
         public void MakeNoneInteractable()
@@ -66,7 +73,7 @@ namespace SudokuSolver2
             {
                 possibleValues.Add(i + 1);
             }
-            UpdatePossibleValuesLabel();
+            UpdatePossibleValues();
         }
 
         public void ResetToInitialValue()
@@ -90,7 +97,7 @@ namespace SudokuSolver2
                 HasValue = true;
                 isDefinedfromStart = true;
             }
-            UpdatePossibleValuesLabel();
+            UpdatePossibleValues();
         }
 
         public void BindLine(Cluster line)
@@ -131,11 +138,6 @@ namespace SudokuSolver2
             {
                 possibleValues.Clear();
             }
-            UpdatePossibleValuesLabel();
-        }
-
-        private void UpdatePossibleValuesLabel()
-        {
             if (HasValue)
             {
                 possibleValuesLabel.Text = String.Empty;
@@ -174,17 +176,9 @@ namespace SudokuSolver2
             }
         }
 
-        private void SetValue(int value)
+        public bool ContainsPossibleValue(int value)
         {
-            Value = value;
-            HasValue = true;
-            textBox.Text = Value.ToString();
-            UpdatePossibleValues();
-        }
-
-        public bool IfPossibleValue(int value)
-        {
-            for( int i = 0; i < possibleValues.Count; i++)
+            for (int i = 0; i < possibleValues.Count; i++)
             {
                 if (possibleValues[i] == value)
                 {
