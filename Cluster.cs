@@ -47,5 +47,43 @@ namespace SudokuSolver2
             }
             return count;
         }
+
+        public void UpdatePossibleValuesInAllCells()
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].UpdatePossibleValues();
+            }
+        }
+
+        public int PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues (int firstValue, int secondValue, int excludedPositionInCluster)
+        {
+            int position = -1;
+            for(int i = 0; i < cells.Count; i++)
+            {
+                if (!cells[i].HasValue && i != excludedPositionInCluster)
+                {
+                    if (cells[i].ContainsOnlyTheseTwoPossibleValues(firstValue, secondValue))
+                    {
+                        position = i;
+                    }
+                }
+            }
+            return position;
+        }
+
+        public void RemoveCertainPossibleValues(List<int> values, List<int> excludepositions)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                if (!cells[i].HasValue && !excludepositions.Contains(i))
+                {
+                    for (int j = 0; j < values.Count; j++)
+                    {
+                        cells[i].RemovePossibleValueIfPresent(values[j]);
+                    }
+                }
+            }
+        }
     }
 }

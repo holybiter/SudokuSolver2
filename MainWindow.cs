@@ -170,19 +170,31 @@ namespace SudokuSolver2
             Button button = ((Button)sender);
             button.Visible = false;
             button.Enabled = false;
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].UpdatePossibleValues();
-            }
+            //for (int i = 0; i < cells.Count; i++)
+            //{
+            //    cells[i].UpdatePossibleValues();
+            //}
         }
 
         private void FillCell(object sender, EventArgs e)
         {
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].UpdatePossibleValues();
-                cells[i].TryFill();
-            }
+            //for (int i = 0; i < cells.Count; i++)
+            //{
+            //    //cells[i].UpdatePossibleValues();
+            //    cells[i].TryFill();
+            //}
+
+            button0_Click(sender, e);
+            button1_Click(sender, e);
+            button0_Click(sender, e);
+
+            button0_Click(sender, e);
+            button2_Click(sender, e);
+            button0_Click(sender, e);
+
+            button0_Click(sender, e);
+            button3_Click(sender, e);
+            button0_Click(sender, e);
         }
 
         private void RestartButton_Click(object sender, EventArgs e)
@@ -200,6 +212,8 @@ namespace SudokuSolver2
             FinishSetupButton.Visible = true;
             FinishSetupButton.Enabled = true;
         }
+
+
 
         private void ResetButton_Click(object sender, EventArgs e)
         {
@@ -222,6 +236,38 @@ namespace SudokuSolver2
             for (int i = 0; i < cells.Count; i++)
             {
                 cells[i].TogglePossibleValuesLabelVisibility(((CheckBox)sender).Checked);
+            }
+        }
+
+        private void button0_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].UpdatePossibleValues();
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].FillTheOnlyPossibleNumber();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].FillTheOnlyPossibleNumberForCluster();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].UpdatePossibleValuesToExcludeBlaBla();
             }
         }
     }

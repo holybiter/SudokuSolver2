@@ -33,6 +33,9 @@ namespace SudokuSolver2
             HasValue = true;
             textBox.Text = Value.ToString();
             UpdatePossibleValues();
+            corresponedLine.UpdatePossibleValuesInAllCells();
+            corresponedColumn.UpdatePossibleValuesInAllCells();
+            corresponedArea.UpdatePossibleValuesInAllCells();
         }
 
         public Cell (TextBox textBox, Label possibleValuesLabel)
@@ -40,9 +43,9 @@ namespace SudokuSolver2
             this.textBox = textBox;
             this.possibleValuesLabel = possibleValuesLabel;
 
-            positionInLine = Convert.ToInt32(textBox.Name.Substring(7, 1));
-            positionInColumn = Convert.ToInt32(textBox.Name.Substring(8, 1));
-            positionInArea = 3 * (positionInLine % 3) + (positionInColumn % 3);
+            positionInLine = Convert.ToInt32(textBox.Name.Substring(8, 1));
+            positionInColumn = Convert.ToInt32(textBox.Name.Substring(7, 1));
+            positionInArea = (positionInLine % 3) + 3 * (positionInColumn % 3);
 
             possibleValues = new List<int>();
             for (int i = 0; i < 9; i++)
@@ -153,15 +156,16 @@ namespace SudokuSolver2
         /// </summary>
         public void TryFill()
         {
-            // Fill the only possioble number for CELL
-            if (!HasValue)
-            {
-                if (possibleValues.Count == 1)
-                {
-                    SetValue(possibleValues[0]);
-                }
-            }
-            // Fill the only posiiblew number for line/column/area
+            // Update possible numbers to exclude existing combinations (2, 3 numbers)
+            UpdatePossibleValuesToExcludeBlaBla();
+            // Fill the only possible number for CELL
+            FillTheOnlyPossibleNumber();
+            // Fill the only possible number for line/column/area
+            FillTheOnlyPossibleNumberForCluster();
+        }
+
+        public void FillTheOnlyPossibleNumberForCluster()
+        {
             if (!HasValue)
             {
                 for (int j = 0; j < possibleValues.Count; j++)
@@ -171,6 +175,48 @@ namespace SudokuSolver2
                         corresponedArea.PossibleValueCount(possibleValues[j], positionInArea) == 0)
                     {
                         SetValue(possibleValues[j]);
+                    }
+                }
+            }
+        }
+
+        public void FillTheOnlyPossibleNumber()
+        {
+            if (!HasValue)
+            {
+                if (possibleValues.Count == 1)
+                {
+                    SetValue(possibleValues[0]);
+                }
+            }
+        }
+
+        public void UpdatePossibleValuesToExcludeBlaBla()
+        {
+            if (!HasValue)
+            {
+                if (possibleValues.Count == 2)
+                {
+                    if (corresponedLine.PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues(possibleValues[0], possibleValues[1], positionInLine) != -1)
+                    {
+                        List<int> positions = new List<int>();
+                        positions.Add(positionInLine);
+                        positions.Add(corresponedLine.PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues(possibleValues[0], possibleValues[1], positionInLine));
+                        corresponedLine.RemoveCertainPossibleValues(possibleValues, positions);
+                    }
+                    if (corresponedColumn.PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues(possibleValues[0], possibleValues[1], positionInColumn) != -1)
+                    {
+                        List<int> positions = new List<int>();
+                        positions.Add(positionInColumn);
+                        positions.Add(corresponedColumn.PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues(possibleValues[0], possibleValues[1], positionInColumn));
+                        corresponedColumn.RemoveCertainPossibleValues(possibleValues, positions);
+                    }
+                    if (corresponedArea.PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues(possibleValues[0], possibleValues[1], positionInArea) != -1)
+                    {
+                        List<int> positions = new List<int>();
+                        positions.Add(positionInArea);
+                        positions.Add(corresponedArea.PositionOfSecondCellThatContainsOnlyTheseTwoPossibleValues(possibleValues[0], possibleValues[1], positionInArea));
+                        corresponedArea.RemoveCertainPossibleValues(possibleValues, positions);
                     }
                 }
             }
@@ -191,6 +237,25 @@ namespace SudokuSolver2
         public void TogglePossibleValuesLabelVisibility(bool show)
         {
             possibleValuesLabel.Visible = show;
+        }
+
+        public void RemovePossibleValueIfPresent(int value)
+        {
+            possibleValues.Remove(value);
+            UpdatePossibleValues();
+        }
+
+        public bool ContainsOnlyTheseTwoPossibleValues(int value1, int value2)
+        {
+            bool contains = false;
+            if (possibleValues.Count == 2)
+            {
+                if (ContainsPossibleValue(value1) && ContainsPossibleValue(value2))
+                {
+                    contains = true;
+                }
+            }
+            return contains;
         }
     }
 }
