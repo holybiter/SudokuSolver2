@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace SudokuSolver2
 {
@@ -61,6 +62,8 @@ namespace SudokuSolver2
                     cells[9 * i + j].BindArea(area);
                 }
             }
+
+            FillComboBoxFromDB();
         }
 
         private TextBox CreateTextBoxForCell(int i, int j)
@@ -275,6 +278,130 @@ namespace SudokuSolver2
             for (int i = 0; i < cells.Count; i++)
             {
                 cells[i].CombinedAlgorithm();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
+            SqlConnection connection = new SqlConnection(connString);
+            string queryString =
+                "SELECT Id, Name, CellData FROM dbo.Sudoku";
+            SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
+
+            DataSet sudokuData = new DataSet();
+
+            var data = "";
+            for (int i = 0; i < cells.Count; i++)
+            {
+                if (cells[i].Value > 0 && cells[i].Value <= 9)
+                {
+                    data += cells[i].Value;
+                }
+                else
+                {
+                    data += "0";
+                }
+            }
+
+            string name = CurrentSudokuNameTextBox.Text == String.Empty ? "Unknown" + DateTime.Now.Hour.ToString()
+                                                 + DateTime.Now.Minute.ToString()
+                                                 : CurrentSudokuNameTextBox.Text;
+
+            SqlCommand myCommand = new SqlCommand();
+            myCommand.CommandType = CommandType.Text;
+            myCommand.CommandText = "INSERT INTO Sudoku " +
+                                                 "Values (" + (new Random()).Next(1000000, 100000000) + ", '" +
+                                                 name + "', '"
+                                                 + data + "')";
+            myCommand.Connection = connection;
+
+            connection.Open();
+            myCommand.ExecuteNonQuery();
+            connection.Close();
+
+            CurrentSudokuNameTextBox.Text = String.Empty;
+
+            FillComboBoxFromDB();
+        }
+
+        private void FillComboBoxFromDB()
+        {
+            string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
+            SqlConnection connection = new SqlConnection(connString);
+            string queryString =
+                "SELECT Id, Name, CellData FROM dbo.Sudoku";
+            SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
+
+            DataSet sudokuData = new DataSet();
+
+            connection.Open();
+            adapter.Fill(sudokuData, "Sudoku");
+            connection.Close();
+
+            ExistingSudokusComboBox.Items.Clear();
+            foreach (DataRow row in sudokuData.Tables[0].Rows)
+            {
+                ExistingSudokusComboBox.Items.Add(row["Name"].ToString().Trim());
+            }
+
+            ExistingSudokusComboBox.SelectedIndex = -1;
+            ExistingSudokusComboBox.SelectedItem = null;
+            ExistingSudokusComboBox.ResetText();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (ExistingSudokusComboBox.SelectedIndex != -1)
+            {
+                string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
+                SqlConnection connection = new SqlConnection(connString);
+                string queryString =
+                    "SELECT Id, Name, CellData FROM dbo.Sudoku";
+                SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
+
+                DataSet sudokuData = new DataSet();
+
+                connection.Open();
+                adapter.Fill(sudokuData, "Sudoku");
+                connection.Close();
+
+                var selectedRow = sudokuData.Tables[0].Rows[ExistingSudokusComboBox.SelectedIndex];
+                var data = selectedRow["CellData"].ToString();
+
+                for (int i = 0; i < cells.Count; i++)
+                {
+                    if (i < data.Length)
+                    {
+                        cells[i].ResetValue(data[i] - '0');
+                    }
+                    else
+                    {
+                        cells[i].ResetValue(0);
+                    }
+                }
+                button0_Click(sender, e);
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (ExistingSudokusComboBox.SelectedIndex != -1)
+            {
+                var name = ExistingSudokusComboBox.SelectedItem.ToString();
+                string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
+                SqlConnection connection = new SqlConnection(connString);
+
+                SqlCommand myCommand = new SqlCommand();
+                myCommand.CommandType = CommandType.Text;
+                myCommand.CommandText = "DELETE FROM Sudoku WHERE [Name] = '" + name + "'";
+                myCommand.Connection = connection;
+
+                connection.Open();
+                myCommand.ExecuteNonQuery();
+                connection.Close();
+
+                FillComboBoxFromDB();
             }
         }
     }

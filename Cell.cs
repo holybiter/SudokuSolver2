@@ -14,7 +14,7 @@ namespace SudokuSolver2
         public int Value { get; private set; }
         public bool HasValue { get; private set; }
 
-        private TextBox textBox;
+        public TextBox textBox;
         private Label possibleValuesLabel;
         private bool isDefinedfromStart;
         private List<int> possibleValues;
@@ -29,15 +29,64 @@ namespace SudokuSolver2
 
         public List<int> PossibleValues { get { return new List<int>(possibleValues); } private set { possibleValues = value; } }
 
-        private void SetValue(int value)
+        public void ResetValue(int value)
         {
-            Value = value;
-            HasValue = true;
-            textBox.Text = Value.ToString();
-            UpdatePossibleValues();
-            corresponedLine.UpdatePossibleValuesInAllCells();
-            corresponedColumn.UpdatePossibleValuesInAllCells();
-            corresponedArea.UpdatePossibleValuesInAllCells();
+            if (value < 1 || value > 9)
+            {
+                Value = 0;
+                HasValue = false;
+                textBox.Text = String.Empty;
+                possibleValues = new List<int>();
+                for (int i = 0; i < 9; i++)
+                {
+                    possibleValues.Add(i + 1);
+                }
+            }
+            else
+            {
+                Value = value;
+                HasValue = true;
+                textBox.Text = Value.ToString();
+                possibleValues = new List<int>();
+                for (int i = 0; i < 9; i++)
+                {
+                    possibleValues.Add(i + 1);
+                }
+            }
+        }
+
+        public void SetValue(int value)
+        {
+            if (value < 1 || value > 9)
+            {
+                Value = 0;
+                HasValue = false;
+                textBox.Text = String.Empty;
+                possibleValues = new List<int>();
+                for (int i = 0; i < 9; i++)
+                {
+                    possibleValues.Add(i + 1);
+                }
+                UpdatePossibleValues();
+                corresponedLine.UpdatePossibleValuesInAllCells();
+                corresponedColumn.UpdatePossibleValuesInAllCells();
+                corresponedArea.UpdatePossibleValuesInAllCells();
+            }
+            else
+            {
+                Value = value;
+                HasValue = true;
+                textBox.Text = Value.ToString();
+                possibleValues = new List<int>();
+                for (int i = 0; i < 9; i++)
+                {
+                    possibleValues.Add(i + 1);
+                }
+                UpdatePossibleValues();
+                corresponedLine.UpdatePossibleValuesInAllCells();
+                corresponedColumn.UpdatePossibleValuesInAllCells();
+                corresponedArea.UpdatePossibleValuesInAllCells();
+            }
         }
 
         public Cell(TextBox textBox, Label possibleValuesLabel)

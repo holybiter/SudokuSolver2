@@ -41,6 +41,11 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.CurrentSudokuNameTextBox = new System.Windows.Forms.TextBox();
+            this.ExistingSudokusComboBox = new System.Windows.Forms.ComboBox();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ExampleCellTextBox
@@ -184,13 +189,63 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button4_Click);
             // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(971, 59);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(66, 52);
+            this.button6.TabIndex = 8;
+            this.button6.Text = "Save current state";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // CurrentSudokuNameTextBox
+            // 
+            this.CurrentSudokuNameTextBox.Location = new System.Drawing.Point(865, 59);
+            this.CurrentSudokuNameTextBox.Name = "CurrentSudokuNameTextBox";
+            this.CurrentSudokuNameTextBox.Size = new System.Drawing.Size(100, 20);
+            this.CurrentSudokuNameTextBox.TabIndex = 9;
+            // 
+            // ExistingSudokusComboBox
+            // 
+            this.ExistingSudokusComboBox.FormattingEnabled = true;
+            this.ExistingSudokusComboBox.Location = new System.Drawing.Point(835, 169);
+            this.ExistingSudokusComboBox.Name = "ExistingSudokusComboBox";
+            this.ExistingSudokusComboBox.Size = new System.Drawing.Size(121, 21);
+            this.ExistingSudokusComboBox.TabIndex = 10;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(962, 167);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 11;
+            this.button7.Text = "Load";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(865, 210);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.TabIndex = 12;
+            this.button8.Text = "Delete";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(866, 621);
+            this.ClientSize = new System.Drawing.Size(1060, 621);
+            this.Controls.Add(this.button8);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.ExistingSudokusComboBox);
+            this.Controls.Add(this.CurrentSudokuNameTextBox);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button4);
@@ -226,6 +281,11 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.TextBox CurrentSudokuNameTextBox;
+        private System.Windows.Forms.ComboBox ExistingSudokusComboBox;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button8;
     }
 }
 
