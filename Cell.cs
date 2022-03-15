@@ -27,6 +27,8 @@ namespace SudokuSolver2
         private Cluster corresponedColumn;
         private Cluster corresponedArea;
 
+        public List<int> PossibleValues { get { return new List<int>(possibleValues); } private set { possibleValues = value; } }
+
         private void SetValue(int value)
         {
             Value = value;
@@ -38,7 +40,7 @@ namespace SudokuSolver2
             corresponedArea.UpdatePossibleValuesInAllCells();
         }
 
-        public Cell (TextBox textBox, Label possibleValuesLabel)
+        public Cell(TextBox textBox, Label possibleValuesLabel)
         {
             this.textBox = textBox;
             this.possibleValuesLabel = possibleValuesLabel;
@@ -191,6 +193,23 @@ namespace SudokuSolver2
             }
         }
 
+        public void CombinedAlgorithm()
+        {
+            corresponedLine.CombinedAlgorithm();
+            corresponedColumn.CombinedAlgorithm();
+            corresponedArea.CombinedAlgorithm();
+        }
+
+        public static bool operator ==(Cell c1, Cell c2)
+        {
+            return c1.textBox.Name == c2.textBox.Name;
+        }
+
+        public static bool operator !=(Cell c1, Cell c2)
+        {
+            return c1.textBox.Name != c2.textBox.Name;
+        }
+
         public void UpdatePossibleValuesToExcludeBlaBla()
         {
             if (!HasValue)
@@ -243,6 +262,14 @@ namespace SudokuSolver2
         {
             possibleValues.Remove(value);
             UpdatePossibleValues();
+        }
+
+        public void RemoveSetOfPossibleValues(HashSet<int> hash)
+        {
+            foreach(var value in hash)
+            {
+                RemovePossibleValueIfPresent((int)value);
+            }
         }
 
         public bool ContainsOnlyTheseTwoPossibleValues(int value1, int value2)

@@ -72,6 +72,53 @@ namespace SudokuSolver2
             return position;
         }
 
+        public void CombinedAlgorithm()
+        {
+            for (int n = 2; n <= 8; n++)
+            {
+                RekursiaStep(n, n, 0, new List<int>(), new HashSet<int>());
+            }
+        }
+
+        private void RekursiaStep(int degree, int maxPvCount, int indexInList, List<int> addedCellsIndexes, HashSet<int> possibleValues)
+        {
+            degree--;
+            for (int i = indexInList; i < cells.Count; i++)
+            {
+                if (cells[i].HasValue)
+                {
+                    continue;
+                }
+                var pvToSet = cells[i].PossibleValues;
+                var editedPv = new HashSet<int>(possibleValues);
+                var editedAddedCellsIndexes = new List<int>(addedCellsIndexes);
+                foreach (var value in pvToSet)
+                {
+                    editedPv.Add(value);
+                }
+                editedAddedCellsIndexes.Add(i);
+
+                if (degree <= 0)
+                {
+                    if (editedPv.Count == maxPvCount)
+                    {
+                        for (int j = 0; j < cells.Count; j++)
+                        {
+                            if (!editedAddedCellsIndexes.Contains(j) && !cells[j].HasValue)
+                            {
+                                cells[j].RemoveSetOfPossibleValues(editedPv);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    RekursiaStep(degree, maxPvCount, i + 1, editedAddedCellsIndexes, editedPv);
+                }
+            }
+            return;
+        }
+
         public void RemoveCertainPossibleValues(List<int> values, List<int> excludepositions)
         {
             for (int i = 0; i < cells.Count; i++)

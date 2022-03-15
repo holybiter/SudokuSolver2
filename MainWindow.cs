@@ -270,5 +270,12 @@ namespace SudokuSolver2
                 cells[i].UpdatePossibleValuesToExcludeBlaBla();
             }
         }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cells.Count; i++)
+            {
+                cells[i].CombinedAlgorithm();
+            }
+        }
     }
 }
