@@ -13,10 +13,7 @@ namespace SudokuSolver2
     {
         public int Value { get; private set; }
         public bool HasValue { get; private set; }
-
-        public TextBox textBox;
-        private Label possibleValuesLabel;
-        private bool isDefinedfromStart;
+        
         private List<int> possibleValues;
 
         private int positionInLine;
@@ -35,7 +32,6 @@ namespace SudokuSolver2
             {
                 Value = 0;
                 HasValue = false;
-                textBox.Text = String.Empty;
                 possibleValues = new List<int>();
                 for (int i = 0; i < 9; i++)
                 {
@@ -46,7 +42,6 @@ namespace SudokuSolver2
             {
                 Value = value;
                 HasValue = true;
-                textBox.Text = Value.ToString();
                 possibleValues = new List<int>();
                 for (int i = 0; i < 9; i++)
                 {
@@ -61,41 +56,28 @@ namespace SudokuSolver2
             {
                 Value = 0;
                 HasValue = false;
-                textBox.Text = String.Empty;
                 possibleValues = new List<int>();
                 for (int i = 0; i < 9; i++)
                 {
                     possibleValues.Add(i + 1);
                 }
-                UpdatePossibleValues();
-                corresponedLine.UpdatePossibleValuesInAllCells();
-                corresponedColumn.UpdatePossibleValuesInAllCells();
-                corresponedArea.UpdatePossibleValuesInAllCells();
             }
             else
             {
                 Value = value;
                 HasValue = true;
-                textBox.Text = Value.ToString();
                 possibleValues = new List<int>();
                 for (int i = 0; i < 9; i++)
                 {
                     possibleValues.Add(i + 1);
                 }
-                UpdatePossibleValues();
-                corresponedLine.UpdatePossibleValuesInAllCells();
-                corresponedColumn.UpdatePossibleValuesInAllCells();
-                corresponedArea.UpdatePossibleValuesInAllCells();
             }
         }
 
-        public Cell(TextBox textBox, Label possibleValuesLabel)
+        public Cell(int cellId)
         {
-            this.textBox = textBox;
-            this.possibleValuesLabel = possibleValuesLabel;
-
-            positionInLine = Convert.ToInt32(textBox.Name.Substring(8, 1));
-            positionInColumn = Convert.ToInt32(textBox.Name.Substring(7, 1));
+            positionInLine = cellId % 9;
+            positionInColumn = cellId / 9;
             positionInArea = (positionInLine % 3) + 3 * (positionInColumn % 3);
 
             possibleValues = new List<int>();
@@ -105,54 +87,68 @@ namespace SudokuSolver2
             }
         }
 
+        public Cell(int cellId, int value)
+        {
+            positionInLine = cellId % 9;
+            positionInColumn = cellId / 9;
+            positionInArea = (positionInLine % 3) + 3 * (positionInColumn % 3);
+
+            possibleValues = new List<int>();
+            if (value >= 1 && value <= 9)
+            {
+                this.Value = value;
+                HasValue = true;
+            }
+            else
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    possibleValues.Add(i + 1);
+                }
+            }
+        }
+
+        public List<int> GetPossibleValues()
+        {
+            return new List<int>(possibleValues);
+        }
+
         public void MakeNoneInteractable()
         {
-            UpdateValueAfterStart();
-            textBox.Enabled = false;
-            textBox.BackColor = Color.White;
+            // UpdateValueAfterStart();
         }
 
         public void MakeInteractable()
         {
-            textBox.Enabled = true;
+            
         }
 
         public void ClearValue()
         {
             HasValue = false;
             Value = 0;
-            textBox.Text = String.Empty;
             possibleValues = new List<int>();
             for (int i = 0; i < 9; i++)
             {
                 possibleValues.Add(i + 1);
             }
-            UpdatePossibleValues();
         }
 
-        public void ResetToInitialValue()
-        {
-            if (!isDefinedfromStart)
-            {
-                ClearValue();
-            }
-        }
-
-        private void UpdateValueAfterStart()
-        {
-            if (textBox.Text == String.Empty)
-            {
-                HasValue = false;
-                isDefinedfromStart = false;
-            }
-            else
-            {
-                Value = Convert.ToInt32(textBox.Text);
-                HasValue = true;
-                isDefinedfromStart = true;
-            }
-            UpdatePossibleValues();
-        }
+        //private void UpdateValueAfterStart()
+        //{
+        //    if (textBox.Text == String.Empty)
+        //    {
+        //        HasValue = false;
+        //        isDefinedfromStart = false;
+        //    }
+        //    else
+        //    {
+        //        Value = Convert.ToInt32(textBox.Text);
+        //        HasValue = true;
+        //        isDefinedfromStart = true;
+        //    }
+        //    UpdatePossibleValues();
+        //}
 
         public void BindLine(Cluster line)
         {
@@ -192,14 +188,6 @@ namespace SudokuSolver2
             {
                 possibleValues.Clear();
             }
-            if (HasValue)
-            {
-                possibleValuesLabel.Text = String.Empty;
-            }
-            else
-            {
-                possibleValuesLabel.Text = string.Join("", possibleValues.ToArray());
-            }
         }
 
         /// <summary>
@@ -213,6 +201,8 @@ namespace SudokuSolver2
             FillTheOnlyPossibleNumber();
             // Fill the only possible number for line/column/area
             FillTheOnlyPossibleNumberForCluster();
+            // algorithm 4
+            CombinedAlgorithm();
         }
 
         public void FillTheOnlyPossibleNumberForCluster()
@@ -249,15 +239,15 @@ namespace SudokuSolver2
             corresponedArea.CombinedAlgorithm();
         }
 
-        public static bool operator ==(Cell c1, Cell c2)
-        {
-            return c1.textBox.Name == c2.textBox.Name;
-        }
+        //public static bool operator ==(Cell c1, Cell c2)
+        //{
+        //    return c1.textBox.Name == c2.textBox.Name;
+        //}
 
-        public static bool operator !=(Cell c1, Cell c2)
-        {
-            return c1.textBox.Name != c2.textBox.Name;
-        }
+        //public static bool operator !=(Cell c1, Cell c2)
+        //{
+        //    return c1.textBox.Name != c2.textBox.Name;
+        //}
 
         public void UpdatePossibleValuesToExcludeBlaBla()
         {
@@ -302,15 +292,9 @@ namespace SudokuSolver2
             return false;
         }
 
-        public void TogglePossibleValuesLabelVisibility(bool show)
-        {
-            possibleValuesLabel.Visible = show;
-        }
-
         public void RemovePossibleValueIfPresent(int value)
         {
             possibleValues.Remove(value);
-            UpdatePossibleValues();
         }
 
         public void RemoveSetOfPossibleValues(HashSet<int> hash)

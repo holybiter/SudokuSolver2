@@ -51,23 +51,11 @@ namespace SudokuSolver2
         void MakeNoneInteractable();
 
         /// <summary>
-        /// Returns the cell to its original state. If a cell contains data that was calculated after 
-        /// the ability to change its contents manually was blocked, the data in the cell will be cleared.
-        /// </summary>
-        void ResetToInitialValue();
-
-        /// <summary>
         /// A method that automatically fills the cell based on data received from the corresponding 
         /// lines, columns, or areas. If it is not possible to determine a new cell value from this data, 
         /// the method will simply update the possible values for the cell.
         /// </summary>
         void TryFill();
-
-        /// <summary>
-        /// A method that sets the visibility of the label containing all possible values for a given cell.
-        /// </summary>
-        /// <param name="show">If true, the label will become visible, otherwise - invisible.</param>
-        void TogglePossibleValuesLabelVisibility(bool show);
 
         /// <summary>
         /// A method that updates data about the possible values of the cell.

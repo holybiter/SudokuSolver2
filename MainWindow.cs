@@ -13,151 +13,164 @@ namespace SudokuSolver2
 {
     public partial class MainWindow : Form
     {
-        private List<Cell> cells; 
+        private Sudoku currentSudoku;
+
+        private List<TextBox> cellTextBoxes;
+        private List<Label> cellLabels;
 
         public MainWindow()
         {
             InitializeComponent();
-            cells = new List<Cell>();
-
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    var cellTextBox = CreateTextBoxForCell(i, j);
-                    var possibleValuesLabel = CreateLabelForCell(i, j);
-                    var addedCell = new Cell(cellTextBox, possibleValuesLabel);
-                    cells.Add(addedCell);
-                }
-            }
-
-            for (int i = 0; i < 9; i++)
-            {
-                var line = new Cluster();
-                for (int j = 0; j < 9; j++)
-                {
-                    line.AddCell(cells[9 * i + j]);
-                    cells[9 * i + j].BindLine(line);
-                }
-            }
-
-            for (int i = 0; i < 9; i++)
-            {
-                var column = new Cluster();
-                for (int j = 0; j < 9; j++)
-                {
-                    column.AddCell(cells[9 * j + i]);
-                    cells[9 * j + i].BindColumn(column);
-                }
-            }
-
-            for (int w = 0; w < 9; w++)
-            {
-                var area = new Cluster();
-                for (int v = 0; v < 9; v++)
-                {
-                    int i = (w / 3) * 3 + (v / 3);
-                    int j = (v % 3) + (w % 3) * 3;
-                    area.AddCell(cells[9 * i + j]);
-                    cells[9 * i + j].BindArea(area);
-                }
-            }
+            cellTextBoxes = new List<TextBox>();
+            cellLabels = new List<Label>();
+            currentSudoku = new Sudoku();
+            InitializeCellTextBoxes();
+            InitializeCellLabels();
 
             FillComboBoxFromDB();
         }
 
-        private TextBox CreateTextBoxForCell(int i, int j)
+        private void InitializeCellTextBoxes()
         {
-            TextBox newCell = new TextBox();
-            int initialX = 17, initialY = i == 8 ? 10 : 12;
-            double intervalX = 66.6666, intervalY = 66.6666;
-            var location = new Point((int)Math.Round(j * intervalX + initialX), (int)Math.Round(i * intervalY + initialY));
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    TextBox newCellTextBox = new TextBox();
+                    int initialX = 17, initialY = i == 8 ? 10 : 12;
+                    double intervalX = 66.6666, intervalY = 66.6666;
+                    var location = new Point((int)Math.Round(j * intervalX + initialX), (int)Math.Round(i * intervalY + initialY));
 
-            newCell.Location = location;
-            newCell.Text = String.Empty;
-            newCell.BorderStyle = BorderStyle.None;
-            newCell.TextAlign = HorizontalAlignment.Center;
-            newCell.Font = new Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold);
-            newCell.Size = new Size(33, 46);
-            newCell.Name = "TextBox" + i.ToString() + j.ToString();
-            newCell.KeyPress += new KeyPressEventHandler(ControlAllowedCharactersInCell);
-            this.Controls.Add(newCell);
+                    newCellTextBox.Location = location;
+                    newCellTextBox.Text = String.Empty;
+                    newCellTextBox.BorderStyle = BorderStyle.None;
+                    newCellTextBox.TextAlign = HorizontalAlignment.Center;
+                    newCellTextBox.Font = new Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold);
+                    newCellTextBox.Size = new Size(33, 46);
+                    newCellTextBox.Name = "TextBox" + i.ToString() + j.ToString();
+                    newCellTextBox.PreviewKeyDown += new PreviewKeyDownEventHandler(ArrowKeyPressedInCellTextbox);
+                    newCellTextBox.KeyPress += new KeyPressEventHandler(KeyPressedAllowOnlyDigits);
 
-            return newCell;
+                    Controls.Add(newCellTextBox);
+                    cellTextBoxes.Add(newCellTextBox);
+                }
+            }
         }
 
-        private Label CreateLabelForCell(int i, int j)
+        private void InitializeCellLabels()
         {
-            Label newLabel = new Label();
-            int initialX = 12, initialY = i == 8 ? 55 : 57;
-            double intervalX = 66.6666, intervalY = 66.6666;
-            var location = new Point((int)Math.Round(j * intervalX + initialX), (int)Math.Round(i * intervalY + initialY));
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    Label newCellLabel = new Label();
+                    int initialX = 12, initialY = i == 8 ? 55 : 57;
+                    double intervalX = 66.6666, intervalY = 66.6666;
+                    var location = new Point((int)Math.Round(j * intervalX + initialX), (int)Math.Round(i * intervalY + initialY));
 
-            newLabel.AutoSize = true;
-            newLabel.BackColor = Color.Transparent;
-            newLabel.TextAlign = ContentAlignment.TopCenter;
-            newLabel.Visible = ShowPossibleValuesCheckBox.Checked;
-            newLabel.Font = new Font("Microsoft Sans Serif", 6F, FontStyle.Bold);
-            newLabel.Location = location;
-            newLabel.Name = "PossibleValuesLabel" + i.ToString() + j.ToString();
-            newLabel.Size = new Size(50, 9);
-            newLabel.TabIndex = 3;
-            newLabel.Text = String.Empty;
-            this.Controls.Add(newLabel);
-
-            return newLabel;
+                    newCellLabel.AutoSize = true;
+                    newCellLabel.BackColor = Color.Transparent;
+                    newCellLabel.TextAlign = ContentAlignment.TopCenter;
+                    newCellLabel.Visible = ShowPossibleValuesCheckBox.Checked;
+                    newCellLabel.Font = new Font("Microsoft Sans Serif", 6F, FontStyle.Bold);
+                    newCellLabel.Location = location;
+                    newCellLabel.Name = "PossibleValuesLabel" + i.ToString() + j.ToString();
+                    newCellLabel.Size = new Size(50, 9);
+                    newCellLabel.TabIndex = 3;
+                    newCellLabel.Text = String.Empty;
+                    
+                    Controls.Add(newCellLabel);
+                    cellLabels.Add(newCellLabel);
+                }
+            }
         }
 
-        private void ControlAllowedCharactersInCell(object sender, KeyPressEventArgs e)
+        private void KeyPressedAllowOnlyDigits(object sender, KeyPressEventArgs e)
         {
             var currentTextBox = (TextBox)sender;
-            // Check for a naughty character in the KeyDown event.
-            if (!System.Text.RegularExpressions.Regex.IsMatch(e.KeyChar.ToString(), @"[1-9 ]") && e.KeyChar != (char)Keys.Back)
+            if (System.Text.RegularExpressions.Regex.IsMatch(e.KeyChar.ToString(), @"[1-9 ]"))
             {
-                // Stop the character from being entered into the control since it is illegal.
-                e.Handled = true;
+                e.Handled = false;
+                var givenValue = e.KeyChar - '0';
+                var currentCellIndex = 9 * (currentTextBox.Name[7] - '0') + (currentTextBox.Name[8] - '0');
+                currentSudoku.SetCellValue(currentCellIndex, givenValue);
             }
             else
             {
-                if (e.KeyChar.ToString() != " " && e.KeyChar != (char)Keys.Back)
-                {
-                    e.Handled = false;
-                }
-                else
+                if (e.KeyChar.ToString() != " " 
+                    && e.KeyChar != (char)Keys.Back 
+                    && e.KeyChar != (char)Keys.Delete 
+                    && e.KeyChar != (char)Keys.Back)
                 {
                     e.Handled = true;
                 }
-
-                MoveFocusToNextControl(currentTextBox);
+                else
+                {
+                    e.Handled = false;
+                }
 
                 currentTextBox.Text = String.Empty;
             }
         }
 
-        private void MoveFocusToNextControl(TextBox currentTextBox)
+        private void ArrowKeyPressedInCellTextbox(object sender, PreviewKeyDownEventArgs e)
         {
-            int currentI = currentTextBox.Name[7] - '0';
-            int currentJ = currentTextBox.Name[8] - '0';
-            if (currentI < 8 || currentJ < 8)
+            char keyChar;
+            int keyValue = e.KeyValue;
+            if (!e.Shift && keyValue >= (int)Keys.A && keyValue <= (int)Keys.Z)
             {
-                var nextI = currentI;
-                var nextJ = currentJ;
-                if (currentJ == 8)
-                {
-                    nextI++;
-                    nextJ = 0;
-                }
-                else
-                {
-                    nextJ++;
-                }
-                var nextTextBox = (TextBox)this.Controls.Find("TextBox" + nextI + nextJ, false).First();
-                nextTextBox.Focus();
+                keyChar = (char)(keyValue + 32);
             }
             else
             {
-                FinishSetupButton.Focus();
+                keyChar = (char)keyValue;
             }
+            var currentTextBox = (TextBox)sender;
+
+            var changeDirection = Direction.None;
+            switch (keyChar)
+            {
+                case (char)Keys.Up:
+                    changeDirection = Direction.Up;
+                    break;
+                case (char)Keys.Down:
+                    changeDirection = Direction.Down;
+                    break;
+                case (char)Keys.Left:
+                    changeDirection = Direction.Left;
+                    break;
+                case (char)Keys.Right:
+                    changeDirection = Direction.Right;
+                    break;
+            }
+            MoveFocusToNextControl(currentTextBox, changeDirection);
+        }
+
+        private void MoveFocusToNextControl(TextBox sender, Direction direction)
+        {
+            if (direction == Direction.None)
+            {
+                return;
+            }
+            int i = sender.Name[7] - '0';
+            int j = sender.Name[8] - '0';
+            switch (direction)
+            {
+                case Direction.Up:
+                    i = i <= 0 ? i : i - 1;
+                    break;
+                case Direction.Down:
+                    i = i >=8 ? i : i + 1;
+                    break;
+                case Direction.Left:
+                    j = j <= 0 ? j : j - 1;
+                    break;
+                case Direction.Right:
+                    j = (j >= 8) ? j : j + 1;
+                    break;
+            }
+            var nextTextBox = (TextBox)this.Controls.Find("TextBox" + i + j, false).First();
+            nextTextBox.Focus();
         }
 
         private void FinishSetupButton_Click(object sender, EventArgs e)
@@ -165,123 +178,134 @@ namespace SudokuSolver2
             ShowPossibleValuesCheckBox.Visible = true;
             FillButton.Enabled = true;
             FillButton.Visible = true;
-            for (int i = 0; i < cells.Count; i++)
+
+            currentSudoku.SetCurrentStateAsInitial();
+            foreach(TextBox textBox in cellTextBoxes)
             {
-                cells[i].MakeNoneInteractable();
+                textBox.Enabled = false;
             }
 
             Button button = ((Button)sender);
             button.Visible = false;
             button.Enabled = false;
-            //for (int i = 0; i < cells.Count; i++)
-            //{
-            //    cells[i].UpdatePossibleValues();
-            //}
+
+            CurrentSudokuNameTextBox.Enabled = false;
+            CurrentSudokuNameTextBox.Visible = false;
+            SaveCurrentSudokuToDBButton.Enabled = false;
+            SaveCurrentSudokuToDBButton.Visible = false;
+            ExistingSudokusComboBox.Enabled = false;
+            ExistingSudokusComboBox.Visible = false;
+            LoadSelectedSudokuFromDBButton.Enabled = false;
+            LoadSelectedSudokuFromDBButton.Visible = false;
+            DeleteSelectedSudokuFromDBButton.Enabled = false;
+            DeleteSelectedSudokuFromDBButton.Visible = false;
         }
 
         private void FillCell(object sender, EventArgs e)
         {
-            //for (int i = 0; i < cells.Count; i++)
-            //{
-            //    //cells[i].UpdatePossibleValues();
-            //    cells[i].TryFill();
-            //}
+            currentSudoku.TryFill();
+            UpdateSudokuGraphics();
+        }
 
-            button0_Click(sender, e);
-            button1_Click(sender, e);
-            button0_Click(sender, e);
-
-            button0_Click(sender, e);
-            button2_Click(sender, e);
-            button0_Click(sender, e);
-
-            button0_Click(sender, e);
-            button3_Click(sender, e);
-            button0_Click(sender, e);
+        private void UpdateSudokuGraphics()
+        {
+            for (int i = 0; i < cellTextBoxes.Count; i++)
+            {
+                var value = currentSudoku.GetCellValue(i);
+                cellTextBoxes[i].Text = value == 0 ? string.Empty : value.ToString();
+            }
+            for (int i = 0; i < cellLabels.Count; i++)
+            {
+                var possibleValues = currentSudoku.GetCellPossibleValues(i);
+                cellLabels[i].Text = string.Join("", possibleValues);
+            }
         }
 
         private void RestartButton_Click(object sender, EventArgs e)
         {
+            currentSudoku.ResetToInitialState();
+            foreach (TextBox textBox in cellTextBoxes)
+            {
+                textBox.Enabled = true;
+            }
             ShowPossibleValuesCheckBox.Checked = false;
             ShowPossibleValuesCheckBox.Visible = false;
             FillButton.Enabled = false;
             FillButton.Visible = false;
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].MakeInteractable();
-                cells[i].ResetToInitialValue();
-            }
-
             FinishSetupButton.Visible = true;
             FinishSetupButton.Enabled = true;
+            CurrentSudokuNameTextBox.Enabled = true;
+            CurrentSudokuNameTextBox.Visible = true;
+            SaveCurrentSudokuToDBButton.Enabled = true;
+            SaveCurrentSudokuToDBButton.Visible = true;
+            ExistingSudokusComboBox.Enabled = true;
+            ExistingSudokusComboBox.Visible = true;
+            LoadSelectedSudokuFromDBButton.Enabled = true;
+            LoadSelectedSudokuFromDBButton.Visible = true;
+            DeleteSelectedSudokuFromDBButton.Enabled = true;
+            DeleteSelectedSudokuFromDBButton.Visible = true;
+            HidePossibleValues();
+            UpdateSudokuGraphics();
         }
-
-
 
         private void ResetButton_Click(object sender, EventArgs e)
         {
+            currentSudoku = new Sudoku();
+            foreach (TextBox textBox in cellTextBoxes)
+            {
+                textBox.Enabled = true;
+            }
             ShowPossibleValuesCheckBox.Checked = false;
             ShowPossibleValuesCheckBox.Visible = false;
             FillButton.Enabled = false;
             FillButton.Visible = false;
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].MakeInteractable();
-                cells[i].ClearValue();
-            }
-
             FinishSetupButton.Visible = true;
             FinishSetupButton.Enabled = true;
+            CurrentSudokuNameTextBox.Enabled = true;
+            CurrentSudokuNameTextBox.Visible = true;
+            SaveCurrentSudokuToDBButton.Enabled = true;
+            SaveCurrentSudokuToDBButton.Visible = true;
+            ExistingSudokusComboBox.Enabled = true;
+            ExistingSudokusComboBox.Visible = true;
+            LoadSelectedSudokuFromDBButton.Enabled = true;
+            LoadSelectedSudokuFromDBButton.Visible = true;
+            DeleteSelectedSudokuFromDBButton.Enabled = true;
+            DeleteSelectedSudokuFromDBButton.Visible = true;
+            HidePossibleValues();
+            UpdateSudokuGraphics();
         }
 
         private void ShowPossibleValuesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            for (int i = 0; i < cells.Count; i++)
+            if (((CheckBox)sender).Checked)
             {
-                cells[i].TogglePossibleValuesLabelVisibility(((CheckBox)sender).Checked);
+                ShowPossibleValues();
+            }
+            else
+            {
+                HidePossibleValues();
             }
         }
 
-        private void button0_Click(object sender, EventArgs e)
+        private void HidePossibleValues()
         {
-            for (int i = 0; i < cells.Count; i++)
+            ShowPossibleValuesCheckBox.Checked = false;
+            foreach (Label label in cellLabels)
             {
-                cells[i].UpdatePossibleValues();
+                label.Visible = false;
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ShowPossibleValues()
         {
-            for (int i = 0; i < cells.Count; i++)
+            ShowPossibleValuesCheckBox.Checked = true;
+            foreach (Label label in cellLabels)
             {
-                cells[i].FillTheOnlyPossibleNumber();
+                label.Visible = true;
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].FillTheOnlyPossibleNumberForCluster();
-            }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].UpdatePossibleValuesToExcludeBlaBla();
-            }
-        }
-        private void button4_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < cells.Count; i++)
-            {
-                cells[i].CombinedAlgorithm();
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
+        private void SaveCurrentSudokuToDB(object sender, EventArgs e)
         {
             string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
             SqlConnection connection = new SqlConnection(connString);
@@ -291,18 +315,7 @@ namespace SudokuSolver2
 
             DataSet sudokuData = new DataSet();
 
-            var data = "";
-            for (int i = 0; i < cells.Count; i++)
-            {
-                if (cells[i].Value > 0 && cells[i].Value <= 9)
-                {
-                    data += cells[i].Value;
-                }
-                else
-                {
-                    data += "0";
-                }
-            }
+            var data = string.Join("", currentSudoku.GetAllValues());
 
             string name = CurrentSudokuNameTextBox.Text == String.Empty ? "Unknown" + DateTime.Now.Hour.ToString()
                                                  + DateTime.Now.Minute.ToString()
@@ -350,7 +363,7 @@ namespace SudokuSolver2
             ExistingSudokusComboBox.ResetText();
         }
 
-        private void button7_Click(object sender, EventArgs e)
+        private void LoadSelectedSudokuFromDB(object sender, EventArgs e)
         {
             if (ExistingSudokusComboBox.SelectedIndex != -1)
             {
@@ -368,24 +381,27 @@ namespace SudokuSolver2
 
                 var selectedRow = sudokuData.Tables[0].Rows[ExistingSudokusComboBox.SelectedIndex];
                 var data = selectedRow["CellData"].ToString();
-
-                for (int i = 0; i < cells.Count; i++)
+                var sudokuValues = new List<int>();
+                for (int i = 0; i < data.Length; i++)
                 {
-                    if (i < data.Length)
-                    {
-                        cells[i].ResetValue(data[i] - '0');
-                    }
-                    else
-                    {
-                        cells[i].ResetValue(0);
-                    }
+                    sudokuValues.Add(data[i] - '0');
                 }
-                button0_Click(sender, e);
+                while(sudokuValues.Count < 81)
+                {
+                    sudokuValues.Add(0);
+                }
+                currentSudoku = new Sudoku(sudokuValues);
+                UpdateSudokuGraphics();
             }
         }
 
-        private void button8_Click(object sender, EventArgs e)
+        private void DeleteSelectedSudokuFromDB(object sender, EventArgs e)
         {
+            var confirmResult = MessageBox.Show("Are you sure to delete this item?", "Confirm Delete", MessageBoxButtons.YesNo);
+            if (confirmResult == DialogResult.No)
+            {
+                return;
+            }
             if (ExistingSudokusComboBox.SelectedIndex != -1)
             {
                 var name = ExistingSudokusComboBox.SelectedItem.ToString();
@@ -400,8 +416,44 @@ namespace SudokuSolver2
                 connection.Open();
                 myCommand.ExecuteNonQuery();
                 connection.Close();
-
                 FillComboBoxFromDB();
+            }
+        }
+
+        protected override bool IsInputKey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Right:
+                case Keys.Left:
+                case Keys.Up:
+                case Keys.Down:
+                    return true;
+                case Keys.Shift | Keys.Right:
+                case Keys.Shift | Keys.Left:
+                case Keys.Shift | Keys.Up:
+                case Keys.Shift | Keys.Down:
+                    return true;
+            }
+            return base.IsInputKey(keyData);
+        }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                    if (e.Shift)
+                    {
+
+                    }
+                    else
+                    {
+                    }
+                    break;
             }
         }
     }
