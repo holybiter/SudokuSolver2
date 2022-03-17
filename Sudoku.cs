@@ -127,14 +127,14 @@ namespace SudokuSolver2
                 }
                 lines.Add(line);
             }
-            for (int i = 0; i < 9; i++)
-            {
-                var line = lines[i];
-                for (int j = 0; j < 9; j++)
-                {
-                    cells[9 * i + j].BindLine(line);
-                }
-            }
+            //for (int i = 0; i < 9; i++)
+            //{
+            //    var line = lines[i];
+            //    for (int j = 0; j < 9; j++)
+            //    {
+            //        initialCells[9 * i + j].BindLine(line);
+            //    }
+            //}
         }
 
         private void DefineColumns()
@@ -150,14 +150,14 @@ namespace SudokuSolver2
                 }
                 columns.Add(column);
             }
-            for (int i = 0; i < 9; i++)
-            {
-                var column = columns[i];
-                for (int j = 0; j < 9; j++)
-                {
-                    cells[9 * i + j].BindColumn(column);
-                }
-            }
+            //for (int i = 0; i < 9; i++)
+            //{
+            //    var column = columns[i];
+            //    for (int j = 0; j < 9; j++)
+            //    {
+            //        initialCells[9 * i + j].BindColumn(column);
+            //    }
+            //}
         }
 
         private void DefineAreas()
@@ -175,14 +175,14 @@ namespace SudokuSolver2
                 }
                 areas.Add(area);
             }
-            for (int i = 0; i < 9; i++)
-            {
-                var area = areas[i];
-                for (int j = 0; j < 9; j++)
-                {
-                    cells[9 * i + j].BindArea(area);
-                }
-            }
+            //for (int i = 0; i < 9; i++)
+            //{
+            //    var area = areas[i];
+            //    for (int j = 0; j < 9; j++)
+            //    {
+            //        cells[9 * i + j].BindArea(area);
+            //    }
+            //}
         }
         #endregion
     }
