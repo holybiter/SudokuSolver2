@@ -27,7 +27,7 @@ namespace SudokuSolver2
             InitializeCellTextBoxes();
             InitializeCellLabels();
 
-            FillComboBoxFromDB();
+            UpdateComboBoxContentFromDB();
         }
 
         private void InitializeCellTextBoxes()
@@ -307,57 +307,19 @@ namespace SudokuSolver2
 
         private void SaveCurrentSudokuToDB(object sender, EventArgs e)
         {
-            string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
-            SqlConnection connection = new SqlConnection(connString);
-            string queryString =
-                "SELECT Id, Name, CellData FROM dbo.Sudoku";
-            SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
-
-            DataSet sudokuData = new DataSet();
-
-            var data = string.Join("", currentSudoku.GetAllValues());
-
-            string name = CurrentSudokuNameTextBox.Text == String.Empty ? "Unknown" + DateTime.Now.Hour.ToString()
-                                                 + DateTime.Now.Minute.ToString()
-                                                 : CurrentSudokuNameTextBox.Text;
-
-            SqlCommand myCommand = new SqlCommand();
-            myCommand.CommandType = CommandType.Text;
-            myCommand.CommandText = "INSERT INTO Sudoku " +
-                                                 "Values (" + (new Random()).Next(1000000, 100000000) + ", '" +
-                                                 name + "', '"
-                                                 + data + "')";
-            myCommand.Connection = connection;
-
-            connection.Open();
-            myCommand.ExecuteNonQuery();
-            connection.Close();
-
-            CurrentSudokuNameTextBox.Text = String.Empty;
-
-            FillComboBoxFromDB();
+            string newSudokuName = CurrentSudokuNameTextBox.Text == string.Empty ? "Unknown" + DateTime.Now.Hour.ToString()
+                                     + DateTime.Now.Minute.ToString()
+                                     : CurrentSudokuNameTextBox.Text;
+            SudokuRepository.SaveNewSudoku(currentSudoku.GetAllValues(), newSudokuName);
+            
+            CurrentSudokuNameTextBox.Text = string.Empty;
+            UpdateComboBoxContentFromDB();
         }
 
-        private void FillComboBoxFromDB()
+        private void UpdateComboBoxContentFromDB()
         {
-            string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
-            SqlConnection connection = new SqlConnection(connString);
-            string queryString =
-                "SELECT Id, Name, CellData FROM dbo.Sudoku";
-            SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
-
-            DataSet sudokuData = new DataSet();
-
-            connection.Open();
-            adapter.Fill(sudokuData, "Sudoku");
-            connection.Close();
-
             ExistingSudokusComboBox.Items.Clear();
-            foreach (DataRow row in sudokuData.Tables[0].Rows)
-            {
-                ExistingSudokusComboBox.Items.Add(row["Name"].ToString().Trim());
-            }
-
+            ExistingSudokusComboBox.Items.AddRange(SudokuRepository.GetAllSudokuNames().ToArray());
             ExistingSudokusComboBox.SelectedIndex = -1;
             ExistingSudokusComboBox.SelectedItem = null;
             ExistingSudokusComboBox.ResetText();
@@ -367,31 +329,13 @@ namespace SudokuSolver2
         {
             if (ExistingSudokusComboBox.SelectedIndex != -1)
             {
-                string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
-                SqlConnection connection = new SqlConnection(connString);
-                string queryString =
-                    "SELECT Id, Name, CellData FROM dbo.Sudoku";
-                SqlDataAdapter adapter = new SqlDataAdapter(queryString, connection);
-
-                DataSet sudokuData = new DataSet();
-
-                connection.Open();
-                adapter.Fill(sudokuData, "Sudoku");
-                connection.Close();
-
-                var selectedRow = sudokuData.Tables[0].Rows[ExistingSudokusComboBox.SelectedIndex];
-                var data = selectedRow["CellData"].ToString();
-                var sudokuValues = new List<int>();
-                for (int i = 0; i < data.Length; i++)
-                {
-                    sudokuValues.Add(data[i] - '0');
-                }
-                while(sudokuValues.Count < 81)
-                {
-                    sudokuValues.Add(0);
-                }
-                currentSudoku = new Sudoku(sudokuValues);
+                var sudokuData = SudokuRepository.GetSudokuDataByName(ExistingSudokusComboBox.SelectedItem.ToString());
+                currentSudoku = new Sudoku(sudokuData);
                 UpdateSudokuGraphics();
+
+                ExistingSudokusComboBox.SelectedIndex = -1;
+                ExistingSudokusComboBox.SelectedItem = null;
+                ExistingSudokusComboBox.ResetText();
             }
         }
 
@@ -405,56 +349,46 @@ namespace SudokuSolver2
             if (ExistingSudokusComboBox.SelectedIndex != -1)
             {
                 var name = ExistingSudokusComboBox.SelectedItem.ToString();
-                string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\SudokuSolverDataBase.mdf;Integrated Security=True";
-                SqlConnection connection = new SqlConnection(connString);
-
-                SqlCommand myCommand = new SqlCommand();
-                myCommand.CommandType = CommandType.Text;
-                myCommand.CommandText = "DELETE FROM Sudoku WHERE [Name] = '" + name + "'";
-                myCommand.Connection = connection;
-
-                connection.Open();
-                myCommand.ExecuteNonQuery();
-                connection.Close();
-                FillComboBoxFromDB();
+                SudokuRepository.DeleteSudokuDataByName(name);
+                UpdateComboBoxContentFromDB();
             }
         }
 
-        protected override bool IsInputKey(Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.Right:
-                case Keys.Left:
-                case Keys.Up:
-                case Keys.Down:
-                    return true;
-                case Keys.Shift | Keys.Right:
-                case Keys.Shift | Keys.Left:
-                case Keys.Shift | Keys.Up:
-                case Keys.Shift | Keys.Down:
-                    return true;
-            }
-            return base.IsInputKey(keyData);
-        }
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            switch (e.KeyCode)
-            {
-                case Keys.Left:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Down:
-                    if (e.Shift)
-                    {
+        //protected override bool IsInputKey(Keys keyData)
+        //{
+        //    switch (keyData)
+        //    {
+        //        case Keys.Right:
+        //        case Keys.Left:
+        //        case Keys.Up:
+        //        case Keys.Down:
+        //            return true;
+        //        case Keys.Shift | Keys.Right:
+        //        case Keys.Shift | Keys.Left:
+        //        case Keys.Shift | Keys.Up:
+        //        case Keys.Shift | Keys.Down:
+        //            return true;
+        //    }
+        //    return base.IsInputKey(keyData);
+        //}
+        //protected override void OnKeyDown(KeyEventArgs e)
+        //{
+        //    base.OnKeyDown(e);
+        //    switch (e.KeyCode)
+        //    {
+        //        case Keys.Left:
+        //        case Keys.Right:
+        //        case Keys.Up:
+        //        case Keys.Down:
+        //            if (e.Shift)
+        //            {
 
-                    }
-                    else
-                    {
-                    }
-                    break;
-            }
-        }
+        //            }
+        //            else
+        //            {
+        //            }
+        //            break;
+        //    }
+        //}
     }
 }

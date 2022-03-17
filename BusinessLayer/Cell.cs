@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace SudokuSolver2
 {
 
-    internal class Cell : ICell
+    internal class Cell
     {
         public int Value { get; private set; }
         public bool HasValue { get; private set; }
