@@ -76,11 +76,11 @@ namespace SudokuSolver2
         {
             for (int n = 2; n <= 8; n++)
             {
-                RekursiaStep(n, n, 0, new List<int>(), new HashSet<int>());
+                RecursionStep(n, n, 0, new List<int>(), new HashSet<int>());
             }
         }
 
-        private void RekursiaStep(int degree, int maxPvCount, int indexInList, List<int> addedCellsIndexes, HashSet<int> possibleValues)
+        private void RecursionStep(int degree, int maxPvCount, int indexInList, List<int> addedCellsIndexes, HashSet<int> possibleValues)
         {
             degree--;
             for (int i = indexInList; i < cells.Count; i++)
@@ -113,7 +113,7 @@ namespace SudokuSolver2
                 }
                 else
                 {
-                    RekursiaStep(degree, maxPvCount, i + 1, editedAddedCellsIndexes, editedPv);
+                    RecursionStep(degree, maxPvCount, i + 1, editedAddedCellsIndexes, editedPv);
                 }
             }
             return;

@@ -113,43 +113,6 @@ namespace SudokuSolver2
             return new List<int>(possibleValues);
         }
 
-        public void MakeNoneInteractable()
-        {
-            // UpdateValueAfterStart();
-        }
-
-        public void MakeInteractable()
-        {
-            
-        }
-
-        public void ClearValue()
-        {
-            HasValue = false;
-            Value = 0;
-            possibleValues = new List<int>();
-            for (int i = 0; i < 9; i++)
-            {
-                possibleValues.Add(i + 1);
-            }
-        }
-
-        //private void UpdateValueAfterStart()
-        //{
-        //    if (textBox.Text == String.Empty)
-        //    {
-        //        HasValue = false;
-        //        isDefinedfromStart = false;
-        //    }
-        //    else
-        //    {
-        //        Value = Convert.ToInt32(textBox.Text);
-        //        HasValue = true;
-        //        isDefinedfromStart = true;
-        //    }
-        //    UpdatePossibleValues();
-        //}
-
         public void BindLine(Cluster line)
         {
             corresponedLine = line;
@@ -196,13 +159,23 @@ namespace SudokuSolver2
         public void TryFill()
         {
             // Update possible numbers to exclude existing combinations (2, 3 numbers)
-            UpdatePossibleValuesToExcludeBlaBla();
+            UpdatePossibleValuesToExcludeExtra();
             // Fill the only possible number for CELL
             FillTheOnlyPossibleNumber();
             // Fill the only possible number for line/column/area
             FillTheOnlyPossibleNumberForCluster();
             // algorithm 4
             CombinedAlgorithm();
+        }
+        public void FillTheOnlyPossibleNumber()
+        {
+            if (!HasValue)
+            {
+                if (possibleValues.Count == 1)
+                {
+                    SetValue(possibleValues[0]);
+                }
+            }
         }
 
         public void FillTheOnlyPossibleNumberForCluster()
@@ -216,21 +189,12 @@ namespace SudokuSolver2
                         corresponedArea.PossibleValueCount(possibleValues[j], positionInArea) == 0)
                     {
                         SetValue(possibleValues[j]);
+                        break;
                     }
                 }
             }
         }
 
-        public void FillTheOnlyPossibleNumber()
-        {
-            if (!HasValue)
-            {
-                if (possibleValues.Count == 1)
-                {
-                    SetValue(possibleValues[0]);
-                }
-            }
-        }
 
         public void CombinedAlgorithm()
         {
@@ -239,17 +203,7 @@ namespace SudokuSolver2
             corresponedArea.CombinedAlgorithm();
         }
 
-        //public static bool operator ==(Cell c1, Cell c2)
-        //{
-        //    return c1.textBox.Name == c2.textBox.Name;
-        //}
-
-        //public static bool operator !=(Cell c1, Cell c2)
-        //{
-        //    return c1.textBox.Name != c2.textBox.Name;
-        //}
-
-        public void UpdatePossibleValuesToExcludeBlaBla()
+        public void UpdatePossibleValuesToExcludeExtra()
         {
             if (!HasValue)
             {

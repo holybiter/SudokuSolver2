@@ -82,11 +82,20 @@ namespace SudokuSolver2
             foreach (Cell cell in cells)
             {
                 cell.UpdatePossibleValues();
+                cell.TryFill();
+                cell.UpdatePossibleValues();
             }
             foreach (Cell cell in cells)
             {
-                cell.TryFill();
+                if (!AllCellsFilled())
+                {
+                    TryFill();
+                }
             }
+        }
+
+        public void UpdatePossibleValues()
+        {
             foreach (Cell cell in cells)
             {
                 cell.UpdatePossibleValues();
@@ -114,6 +123,18 @@ namespace SudokuSolver2
         public List<int> GetCellPossibleValues(int cellIndex)
         {
             return cells[cellIndex].GetPossibleValues();
+        }
+
+        public bool AllCellsFilled()
+        {
+            foreach(Cell cell in cells)
+            {
+                if (!cell.HasValue)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         #region Private methods
